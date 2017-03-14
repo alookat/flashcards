@@ -1,6 +1,10 @@
+// The two strings: before and after translation
 const engText = "In September, my girlfriend and I go to Spain.";
 const espText = "En septiembre, mi novia y yo vamos a España."
+// Store the split after-translation string somewhere
+const espWords = espText.split(" ");
 
+// Access elements from the DOM
 const section = document.querySelector("section");
 const engP = document.getElementById("eng-p");
 const espP = document.getElementById("esp-p");
@@ -8,36 +12,54 @@ const resetButton = document.querySelector("button#reset");
 const revealButton = document.querySelector("button#reveal");
 const editButton = document.querySelector("button#edit");
 
-const espWords = espText.split(" ");
-
+// Set the first paragraph as the before-translation string
 engP.textContent = engText;
 
+// Start with inability to reset
 resetButton.setAttribute("disabled");
 
+// Loop over split after-translation
 for (let i = 0; i < espWords.length; i += 1) {
+  // Create a span for each word and space in-between
   let espSpan = document.createElement("span");
   let espSpanSpace = document.createElement("span")
 
+  // Define span styles
+  let spanStyles = {
+    covered: () => {
+      espSpan.style.backgroundColor = "white";
+      espSpan.style.color = "white";
+      espSpan.style.boxShadow = "0 3px 6px #ccc";
+    },
+    shown: () => {
+      espSpan.style.backgroundColor = "";
+      espSpan.style.color = "";
+      espSpan.style.boxShadow = "";
+    }
+  }
+
+  // Set defaults: covered-up style, textContent
+  spanStyles.covered();
   espSpanSpace.textContent = " ";
-  espSpan.style.backgroundColor = "white";
-  espSpan.style.color = "white";
-  espSpan.style.boxShadow = "0 3px 6px #ccc";
   espSpan.textContent = espWords[i];
+
+  // Add these spans to the main after-translation paragraph
   espP.appendChild(espSpan);
   espP.appendChild(espSpanSpace);
+
+  // Set boolean for easy switching
   let shown = false;
 
   espSpan.addEventListener("click", (e) => {
     if (shown === false) {
 			resetButton.removeAttribute("disabled");
-      espSpan.style.backgroundColor = "";
-      espSpan.style.color = "";
-      espSpan.style.boxShadow = "";
+      spanStyles.shown();
+
       shown = true;
     } else if (shown === true) {
-      espSpan.style.backgroundColor = "white";
-      espSpan.style.color = "white";
-      espSpan.style.boxShadow = "0 3px 6px #ccc"
+      resetButton.setAttribute("disabled");
+      spanStyles.covered();
+
       shown = false;
     }
   });
@@ -63,11 +85,14 @@ for (let i = 0; i < espWords.length; i += 1) {
 
 editButton.addEventListener("click", (e) => {
 	if (editButton.textContent === "Edit") {
-    console.log("edit button clicked")
+    console.log("edit button clicked");
+    resetButton.setAttribute("disabled");
+    revealButton.setAttribute("disabled");
+
+
 		const engInput = document.createElement("input");
 		const espInput = document.createElement("input");
 
-    // const section = editButton.parentNode;
     const engP = document.getElementById("eng-p");
     const espP = document.getElementById("esp-p");
 
@@ -75,8 +100,7 @@ editButton.addEventListener("click", (e) => {
 		engInput.value = engP.textContent;
 		section.insertBefore(engInput, engP);
 		section.removeChild(engP);
-    // console.log(engP.parentNode);
-    //
+
 		espInput.type = "text";
 		espInput.value = espP.textContent;
 		section.insertBefore(espInput, espP);
@@ -85,25 +109,24 @@ editButton.addEventListener("click", (e) => {
 		editButton.textContent = "Save";
 
 	} else if (editButton.textContent === "Save") {
-    console.log("save button clicked")
+    console.log("save button clicked");
+    resetButton.removeAttribute("disabled");
+    revealButton.removeAttribute("disabled");
+    resetButton.setAttribute("disabled");
+
 		const engInput = section.firstElementChild;
 		const espInput = section.firstElementChild.nextElementSibling;
 
-    // console.log(engInput, espInput);
-    //
 		const engP = document.createElement("p");
     engP.setAttribute("id", "eng-p");
 
 		const espP = document.createElement("p");
     espP.setAttribute("id", "esp-p");
-    //
+
 		engP.textContent = engInput.value;
-		// espP.textContent = espInput.value;
-    //
+
 		section.insertBefore(engP, engInput);
     section.removeChild(engInput);
-    //
-
 
 		editButton.textContent = "Edit";
 
