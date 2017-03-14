@@ -9,7 +9,7 @@ const toP = document.getElementById("esp-p");
 const resetButton = document.querySelector("button#reset");
 const revealButton = document.querySelector("button#reveal");
 const editButton = document.querySelector("button#edit");
-const saveButton = document.querySelector("button#save");
+const addButton = document.querySelector("button#add");
 const ul = document.querySelector("ul#collection");
 
 // Start with inability to reset
@@ -99,9 +99,10 @@ editButton.addEventListener("click", (e) => {
     // Prepare button for switch back to View
     editButton.textContent = "View";
 
-    // Disable all flashcards resetting/revealing whilst editing
+    // Disable all flashcards resetting/revealing/adding whilst editing
     resetButton.setAttribute("disabled");
     revealButton.setAttribute("disabled");
+    addButton.setAttribute("disabled");
 
     // Create input, fill with existing P content, remove P
     // Refactor me
@@ -124,9 +125,10 @@ editButton.addEventListener("click", (e) => {
     // Prepare button for switch back to Edit
     editButton.textContent = "Edit";
 
-    // Re-enable resetting and revealing of flashcards
+    // Re-enable resetting and revealing, and adding of flashcards
     resetButton.removeAttribute("disabled");
     revealButton.removeAttribute("disabled");
+    addButton.removeAttribute("disabled");
     // Disable reset for now, since flashcards will start covered
     resetButton.setAttribute("disabled");
 
@@ -148,18 +150,30 @@ editButton.addEventListener("click", (e) => {
 	}
 });
 
-saveButton.addEventListener("click", () => {
+addButton.addEventListener("click", () => {
   tempFromP = "This is the sentence in English";
   tempToP = "Es el sentence en Espanol"
 
   let li = document.createElement("li");
   let liFrom = document.createElement("p");
   let liTo = document.createElement("p");
+  let practiceButton = document.createElement("button");
+  let deleteButton = document.createElement("button");
 
   liFrom.textContent = tempFromP;
   liTo.textContent = tempToP;
+  practiceButton.textContent = "Practice";
+  deleteButton.textContent = "Delete";
 
   li.appendChild(liFrom);
   li.appendChild(liTo);
+  li.appendChild(practiceButton);
+  li.appendChild(deleteButton);
   ul.appendChild(li);
+
+  deleteButton.addEventListener("click", () => {
+    console.log("delete me");
+    ul.removeChild(li);
+  })
+
 })
