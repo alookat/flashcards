@@ -1,13 +1,11 @@
 // The two strings: before and after translation
-const engText = "In September, my girlfriend and I go to Spain.";
-const espText = "En septiembre, mi novia y yo vamos a España."
-// Store the split after-translation string somewhere
-// const espWords = espText.split(" ");
+const fromText = "In September, my girlfriend and I go to Spain.";
+const toText = "En septiembre, mi novia y yo vamos a España."
 
 // Access elements from the DOM
 const section = document.querySelector("section");
-const engP = document.getElementById("eng-p");
-const espP = document.getElementById("esp-p");
+const fromP = document.getElementById("eng-p");
+const toP = document.getElementById("esp-p");
 const resetButton = document.querySelector("button#reset");
 const revealButton = document.querySelector("button#reveal");
 const editButton = document.querySelector("button#edit");
@@ -16,8 +14,8 @@ const editButton = document.querySelector("button#edit");
 // Start with inability to reset
 resetButton.setAttribute("disabled");
 
-// Define span styles
-let spanStyles = {
+// Define card/span styles
+let cardStyles = {
   covered: (span) => {
     span.style.backgroundColor = "white";
     span.style.color = "white";
@@ -38,28 +36,28 @@ function splitWords(string, parent) {
   // Loop over each part of the string
   for (let i = 0; i < words.length; i += 1) {
     // Create a span for each word and space in-between
-    let espSpan = document.createElement("span");
-    let espSpanSpace = document.createElement("span")
+    let toCard = document.createElement("span");
+    let spanSpace = document.createElement("span")
 
     // Set defaults: covered-up style, textContent
-    spanStyles.covered(espSpan);
-    espSpanSpace.textContent = " ";
-    espSpan.textContent = words[i];
+    cardStyles.covered(toCard);
+    spanSpace.textContent = " ";
+    toCard.textContent = words[i];
 
     // Add these spans to the main after-translation paragraph
-    parent.appendChild(espSpan);
-    parent.appendChild(espSpanSpace);
+    parent.appendChild(toCard);
+    parent.appendChild(spanSpace);
 
     // Create listeners for Reset/Reveal buttons
     resetButton.addEventListener("click", (e) => {
-      spanStyles.covered(espSpan);
+      cardStyles.covered(toCard);
       shown = false;
       resetButton.setAttribute("disabled");
       revealButton.removeAttribute("disabled");
     });
 
     revealButton.addEventListener("click", (e) => {
-      spanStyles.shown(espSpan);
+      cardStyles.shown(toCard);
       shown = true;
       revealButton.setAttribute("disabled");
       resetButton.removeAttribute("disabled");
@@ -68,10 +66,10 @@ function splitWords(string, parent) {
 }
 
 // Set the first paragraph as the before-translation string
-engP.textContent = engText;
+fromP.textContent = fromText;
 
 // Set the second paragraph as the after-translation string, already split
-splitWords(espText, espP);
+splitWords(toText, toP);
 
 // Detect and act on clicks on spans
 // Bubble up to spans to hide/show indivual reveals/hides
@@ -82,11 +80,11 @@ section.addEventListener("click", (e) => {
     let selectSpan = e.target;
     if (shown === false) {
   		resetButton.removeAttribute("disabled");
-      spanStyles.shown(selectSpan);
+      cardStyles.shown(selectSpan);
       shown = true;
     } else if (shown === true) {
       resetButton.setAttribute("disabled");
-      spanStyles.covered(selectSpan);
+      cardStyles.covered(selectSpan);
       shown = false;
     }
   }
@@ -106,19 +104,19 @@ editButton.addEventListener("click", (e) => {
 
     // Create input, fill with existing P content, remove P
     // Refactor me
-		const engInput = document.createElement("input");
-    const engP = document.getElementById("eng-p");
-		engInput.type = "text";
-		engInput.value = engP.textContent;
-		section.insertBefore(engInput, engP);
-		section.removeChild(engP);
+		const fromInput = document.createElement("input");
+    const fromP = document.getElementById("eng-p");
+		fromInput.type = "text";
+		fromInput.value = fromP.textContent;
+		section.insertBefore(fromInput, fromP);
+		section.removeChild(fromP);
     // Same as above
-    const espInput = document.createElement("input");
-    const espP = document.getElementById("esp-p");
-		espInput.type = "text";
-		espInput.value = espP.textContent;
-		section.insertBefore(espInput, espP);
-		section.removeChild(espP);
+    const toInput = document.createElement("input");
+    const toP = document.getElementById("esp-p");
+		toInput.type = "text";
+		toInput.value = toP.textContent;
+		section.insertBefore(toInput, toP);
+		section.removeChild(toP);
 	}
   // Edit mode to Normal
   else if (editButton.textContent === "Save") {
@@ -133,18 +131,18 @@ editButton.addEventListener("click", (e) => {
 
     // Create P, fill with existing input content, remove input
     // Refactor me
-		const engInput = section.firstElementChild;
-		const engP = document.createElement("p");
-    engP.setAttribute("id", "eng-p");
-    engP.textContent = engInput.value;
-    section.insertBefore(engP, engInput);
-    section.removeChild(engInput);
+		const fromInput = section.firstElementChild;
+		const fromP = document.createElement("p");
+    fromP.setAttribute("id", "eng-p");
+    fromP.textContent = fromInput.value;
+    section.insertBefore(fromP, fromInput);
+    section.removeChild(fromInput);
     // *Similar* to above
-    const espInput = section.firstElementChild.nextElementSibling;
-		let espP = document.createElement("p");
-    espP.setAttribute("id", "esp-p");
-    splitWords(espInput.value, espP);
-    section.insertBefore(espP, espInput);
-		section.removeChild(espInput);
+    const toInput = section.firstElementChild.nextElementSibling;
+		let toP = document.createElement("p");
+    toP.setAttribute("id", "esp-p");
+    splitWords(toInput.value, toP);
+    section.insertBefore(toP, toInput);
+		section.removeChild(toInput);
 	}
 });
