@@ -2,7 +2,7 @@
 const engText = "In September, my girlfriend and I go to Spain.";
 const espText = "En septiembre, mi novia y yo vamos a España."
 // Store the split after-translation string somewhere
-const espWords = espText.split(" ");
+// const espWords = espText.split(" ");
 
 // Access elements from the DOM
 const section = document.querySelector("section");
@@ -12,83 +12,96 @@ const resetButton = document.querySelector("button#reset");
 const revealButton = document.querySelector("button#reveal");
 const editButton = document.querySelector("button#edit");
 
-// Set the first paragraph as the before-translation string
-engP.textContent = engText;
+
+
 
 // Start with inability to reset
 resetButton.setAttribute("disabled");
 
-// Loop over split after-translation
-for (let i = 0; i < espWords.length; i += 1) {
-  // Create a span for each word and space in-between
-  let espSpan = document.createElement("span");
-  let espSpanSpace = document.createElement("span")
-
-  // Define span styles
-  let spanStyles = {
-    covered: () => {
-      espSpan.style.backgroundColor = "white";
-      espSpan.style.color = "white";
-      espSpan.style.boxShadow = "0 3px 6px #ccc";
-    },
-    shown: () => {
-      espSpan.style.backgroundColor = "";
-      espSpan.style.color = "";
-      espSpan.style.boxShadow = "";
-    }
+// Define span styles
+let spanStyles = {
+  covered: (span) => {
+    span.style.backgroundColor = "white";
+    span.style.color = "white";
+    span.style.boxShadow = "0 3px 6px #ccc";
+  },
+  shown: (span) => {
+    span.style.backgroundColor = "";
+    span.style.color = "";
+    span.style.boxShadow = "";
   }
+}
 
-  // Set defaults: covered-up style, textContent
-  spanStyles.covered();
-  espSpanSpace.textContent = " ";
-  espSpan.textContent = espWords[i];
+// Loop over split after-translation
+function splitWords(string, parent) {
+  // Store the split after-translation string
+  let words = string.split(" ");
 
-  // Add these spans to the main after-translation paragraph
-  espP.appendChild(espSpan);
-  espP.appendChild(espSpanSpace);
+  // Loop over each part of the string
+  for (let i = 0; i < words.length; i += 1) {
+    // Create a span for each word and space in-between
+    let espSpan = document.createElement("span");
+    let espSpanSpace = document.createElement("span")
 
-  // Set boolean for easy switching
-  let shown = false;
+    // Set defaults: covered-up style, textContent
+    spanStyles.covered(espSpan);
+    espSpanSpace.textContent = " ";
+    espSpan.textContent = words[i];
 
-  espSpan.addEventListener("click", (e) => {
+    // Add these spans to the main after-translation paragraph
+    parent.appendChild(espSpan);
+    parent.appendChild(espSpanSpace);
+
+    // Create listeners for Reset/Reveal buttons
+    resetButton.addEventListener("click", (e) => {
+      spanStyles.covered(espSpan);
+      shown = false;
+      resetButton.setAttribute("disabled");
+      revealButton.removeAttribute("disabled");
+    });
+
+    revealButton.addEventListener("click", (e) => {
+      spanStyles.shown(espSpan);
+      shown = true;
+      revealButton.setAttribute("disabled");
+      resetButton.removeAttribute("disabled");
+    });
+  }
+}
+
+// Set the first paragraph as the before-translation string
+engP.textContent = engText;
+// Set the second paragraph as the after-translation string, already split
+splitWords(espText, espP);
+
+// Bubble up to spans to hide/show indivual reveals/hides
+section.addEventListener("click", (e) => {
+  if (e.target.tagName === "SPAN") {
+    // Set boolean for easy switching
+    let shown = false;
+    let selectSpan = e.target;
     if (shown === false) {
-			resetButton.removeAttribute("disabled");
-      spanStyles.shown();
+  		resetButton.removeAttribute("disabled");
+      spanStyles.shown(selectSpan);
 
       shown = true;
     } else if (shown === true) {
       resetButton.setAttribute("disabled");
-      spanStyles.covered();
+      spanStyles.covered(selectSpan);
 
       shown = false;
     }
-  });
+  }
+});
 
-  resetButton.addEventListener("click", (e) => {
-    espSpan.style.backgroundColor = "white";
-    espSpan.style.color = "white";
-    espSpan.style.boxShadow = "0 3px 6px #ccc";
-    shown = false;
-		resetButton.setAttribute("disabled");
-		revealButton.removeAttribute("disabled");
-  });
 
-  revealButton.addEventListener("click", (e) => {
-    espSpan.style.backgroundColor = "";
-    espSpan.style.color = "";
-    espSpan.style.boxShadow = "";
-    shown = true;
-		revealButton.setAttribute("disabled");
-		resetButton.removeAttribute("disabled");
-  });
-}
-
+// DANGER ZONE
 editButton.addEventListener("click", (e) => {
 	if (editButton.textContent === "Edit") {
-    console.log("edit button clicked");
+    editButton.textContent = "Save";
+
     resetButton.setAttribute("disabled");
     revealButton.setAttribute("disabled");
-
 
 		const engInput = document.createElement("input");
 		const espInput = document.createElement("input");
@@ -106,78 +119,29 @@ editButton.addEventListener("click", (e) => {
 		section.insertBefore(espInput, espP);
 		section.removeChild(espP);
 
-		editButton.textContent = "Save";
+
 
 	} else if (editButton.textContent === "Save") {
-    console.log("save button clicked");
+    editButton.textContent = "Edit";
+
     resetButton.removeAttribute("disabled");
     revealButton.removeAttribute("disabled");
     resetButton.setAttribute("disabled");
 
 		const engInput = section.firstElementChild;
-		const espInput = section.firstElementChild.nextElementSibling;
-
 		const engP = document.createElement("p");
     engP.setAttribute("id", "eng-p");
+    engP.textContent = engInput.value;
 
-		const espP = document.createElement("p");
-    espP.setAttribute("id", "esp-p");
-
-		engP.textContent = engInput.value;
-
-		section.insertBefore(engP, engInput);
+    section.insertBefore(engP, engInput);
     section.removeChild(engInput);
 
-		editButton.textContent = "Edit";
 
-    const espWords = espInput.value.split(" ");
+    const espInput = section.firstElementChild.nextElementSibling;
+		let espP = document.createElement("p");
+    espP.setAttribute("id", "esp-p");
 
-    for (let i = 0; i < espWords.length; i += 1) {
-      let espSpan = document.createElement("span");
-      let espSpanSpace = document.createElement("span")
-
-      espSpanSpace.textContent = " ";
-      espSpan.style.backgroundColor = "white";
-      espSpan.style.color = "white";
-      espSpan.style.boxShadow = "0 3px 6px #ccc";
-      espSpan.textContent = espWords[i];
-      espP.appendChild(espSpan);
-      espP.appendChild(espSpanSpace);
-      let shown = false;
-
-      espSpan.addEventListener("click", (e) => {
-        if (shown === false) {
-    			resetButton.removeAttribute("disabled");
-          espSpan.style.backgroundColor = "";
-          espSpan.style.color = "";
-          espSpan.style.boxShadow = "";
-          shown = true;
-        } else if (shown === true) {
-          espSpan.style.backgroundColor = "white";
-          espSpan.style.color = "white";
-          espSpan.style.boxShadow = "0 3px 6px #ccc"
-          shown = false;
-        }
-      });
-
-      resetButton.addEventListener("click", (e) => {
-        espSpan.style.backgroundColor = "white";
-        espSpan.style.color = "white";
-        espSpan.style.boxShadow = "0 3px 6px #ccc";
-        shown = false;
-    		resetButton.setAttribute("disabled");
-    		revealButton.removeAttribute("disabled");
-      });
-
-      revealButton.addEventListener("click", (e) => {
-        espSpan.style.backgroundColor = "";
-        espSpan.style.color = "";
-        espSpan.style.boxShadow = "";
-        shown = true;
-    		revealButton.setAttribute("disabled");
-    		resetButton.removeAttribute("disabled");
-      });
-    }
+    splitWords(espInput.value, espP);
 
     section.insertBefore(espP, espInput);
 		section.removeChild(espInput);
