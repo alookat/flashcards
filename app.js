@@ -10,7 +10,6 @@ const resetButton = document.querySelector("button#reset");
 const revealButton = document.querySelector("button#reveal");
 const editButton = document.querySelector("button#edit");
 
-
 // Start with inability to reset
 resetButton.setAttribute("disabled");
 
