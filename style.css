@@ -16,3 +16,11 @@ p, span {
 span {
 	line-height: 26pt;
 }
+
+/*Bottom area*/
+ul li {
+  background-color: white;
+  padding: 12pt 6pt;
+  list-style: none;
+  margin-bottom: 14pt;
+}

@@ -3,12 +3,14 @@ const fromText = "In September, my girlfriend and I go to Spain.";
 const toText = "En septiembre, mi novia y yo vamos a España."
 
 // Access elements from the DOM
-const section = document.querySelector("section");
+const sectionFlashcards = document.querySelector("section#flashcards");
 const fromP = document.getElementById("eng-p");
 const toP = document.getElementById("esp-p");
 const resetButton = document.querySelector("button#reset");
 const revealButton = document.querySelector("button#reveal");
 const editButton = document.querySelector("button#edit");
+const saveButton = document.querySelector("button#save");
+const ul = document.querySelector("ul#collection");
 
 // Start with inability to reset
 resetButton.setAttribute("disabled");
@@ -72,7 +74,7 @@ splitWords(toText, toP);
 
 // Detect and act on clicks on spans
 // Bubble up to spans to hide/show indivual reveals/hides
-section.addEventListener("click", (e) => {
+sectionFlashcards.addEventListener("click", (e) => {
   if (e.target.tagName === "SPAN") {
     // Set boolean for easy switching
     let shown = false;
@@ -90,12 +92,12 @@ section.addEventListener("click", (e) => {
 });
 
 
-// Re-do all of this if the edit button is clicked, and then clicked again (saved)
+// Re-do all of this if the edit button is clicked, and then clicked again (View)
 editButton.addEventListener("click", (e) => {
   // Normal to Edit mode
 	if (editButton.textContent === "Edit") {
-    // Prepare button for switch back to Save(d)
-    editButton.textContent = "Save";
+    // Prepare button for switch back to View
+    editButton.textContent = "View";
 
     // Disable all flashcards resetting/revealing whilst editing
     resetButton.setAttribute("disabled");
@@ -107,18 +109,18 @@ editButton.addEventListener("click", (e) => {
     const fromP = document.getElementById("eng-p");
 		fromInput.type = "text";
 		fromInput.value = fromP.textContent;
-		section.insertBefore(fromInput, fromP);
-		section.removeChild(fromP);
+		sectionFlashcards.insertBefore(fromInput, fromP);
+		sectionFlashcards.removeChild(fromP);
     // Same as above
     const toInput = document.createElement("input");
     const toP = document.getElementById("esp-p");
 		toInput.type = "text";
 		toInput.value = toP.textContent;
-		section.insertBefore(toInput, toP);
-		section.removeChild(toP);
+		sectionFlashcards.insertBefore(toInput, toP);
+		sectionFlashcards.removeChild(toP);
 	}
   // Edit mode to Normal
-  else if (editButton.textContent === "Save") {
+  else if (editButton.textContent === "View") {
     // Prepare button for switch back to Edit
     editButton.textContent = "Edit";
 
@@ -130,18 +132,34 @@ editButton.addEventListener("click", (e) => {
 
     // Create P, fill with existing input content, remove input
     // Refactor me
-		const fromInput = section.firstElementChild;
+		const fromInput = sectionFlashcards.firstElementChild;
 		const fromP = document.createElement("p");
     fromP.setAttribute("id", "eng-p");
     fromP.textContent = fromInput.value;
-    section.insertBefore(fromP, fromInput);
-    section.removeChild(fromInput);
+    sectionFlashcards.insertBefore(fromP, fromInput);
+    sectionFlashcards.removeChild(fromInput);
     // *Similar* to above
-    const toInput = section.firstElementChild.nextElementSibling;
+    const toInput = sectionFlashcards.firstElementChild.nextElementSibling;
 		let toP = document.createElement("p");
     toP.setAttribute("id", "esp-p");
     splitWords(toInput.value, toP);
-    section.insertBefore(toP, toInput);
-		section.removeChild(toInput);
+    sectionFlashcards.insertBefore(toP, toInput);
+		sectionFlashcards.removeChild(toInput);
 	}
 });
+
+saveButton.addEventListener("click", () => {
+  tempFromP = "This is the sentence in English";
+  tempToP = "Es el sentence en Espanol"
+
+  let li = document.createElement("li");
+  let liFrom = document.createElement("p");
+  let liTo = document.createElement("p");
+
+  liFrom.textContent = tempFromP;
+  liTo.textContent = tempToP;
+
+  li.appendChild(liFrom);
+  li.appendChild(liTo);
+  ul.appendChild(li);
+})
