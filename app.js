@@ -150,30 +150,50 @@ editButton.addEventListener("click", (e) => {
 	}
 });
 
-addButton.addEventListener("click", () => {
-  tempFromP = "This is the sentence in English";
-  tempToP = "Es el sentence en Espanol"
+// Adding the current flashcard to the collection
+addButton.addEventListener("click", (e) => {
+  // Create new variables for all the targets
+  const sectionFlashcards = e.target.parentNode;
+  const newFromP = sectionFlashcards.firstElementChild;
+  const newToP = newFromP.nextElementSibling;
 
+  // Create elements for them
   let li = document.createElement("li");
   let liFrom = document.createElement("p");
   let liTo = document.createElement("p");
   let practiceButton = document.createElement("button");
   let deleteButton = document.createElement("button");
 
-  liFrom.textContent = tempFromP;
-  liTo.textContent = tempToP;
+  // Give the new elements the varables' text content
+  liFrom.textContent = newFromP.textContent;
+  liTo.textContent = newToP.textContent;
   practiceButton.textContent = "Practice";
+  practiceButton.setAttribute("id", "practice");
   deleteButton.textContent = "Delete";
 
+  // Add these new elements to the collection item
   li.appendChild(liFrom);
   li.appendChild(liTo);
   li.appendChild(practiceButton);
   li.appendChild(deleteButton);
   ul.appendChild(li);
 
+  // Delete this collection item
   deleteButton.addEventListener("click", () => {
     console.log("delete me");
     ul.removeChild(li);
-  })
+  });
 
-})
+});
+
+// Send this item up to sectionFlashcards
+ul.addEventListener("click", (e) => {
+  if (e.target.id === "practice") {
+    const li = e.target.parentNode;
+    const cardFromP = li.firstElementChild;
+    console.log(cardFromP.textContent);
+
+    fromP.textContent = cardFromP.textContent;
+    toP.textContent = "Hi there!";
+  }
+});
